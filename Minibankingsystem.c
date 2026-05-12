@@ -95,24 +95,30 @@ int login(struct Account *loggedIn) {
 }
 
 // ================= UPDATE ACCOUNT =================
-
-void updateAccount(struct Account acc) {
+void updateAccount(struct Account acc){
+    // Open the original file in read mode
     FILE *fp = fopen(FILE_NAME, "rb");
+    // Create a temporary file to store updated data
     FILE *temp = fopen("temp.dat", "wb");
-
+    // This struct will hold each record as we read from the file
     struct Account a;
-
-    while (fread(&a, sizeof(a), 1, fp)) {
-        if (a.accNo == acc.accNo)
+    // Read each account from the original file one by one
+    while (fread(&a, sizeof(a), 1, fp)){
+        // If this is the account we want to update
+        if(a.accNo == acc.accNo){
+            // Write the UPDATED account (new data) to temp file
             fwrite(&acc, sizeof(acc), 1, temp);
-        else
+        }else{
+            // Otherwise, copy the account as it is (unchanged)
             fwrite(&a, sizeof(a), 1, temp);
+        }
     }
-
+    // Close both files after processing
     fclose(fp);
     fclose(temp);
-
+    // Delete the original file (old data)
     remove(FILE_NAME);
+    // Rename temp file to original file name (replace old with updated version)
     rename("temp.dat", FILE_NAME);
 }
 
